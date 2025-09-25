@@ -66,13 +66,6 @@ local Misc = Window:CreateTab({
     ShowTitle = true
 })
 
-ThemeTab:BuildThemeSection()
-local ConfigTab = Window:CreateTab({
-    Name = "Config",
-    Icon = "settings"
-})
-ConfigTab:BuildConfigSection()
-
 local function getKillerModel()
     for _, plr in pairs(Players:GetPlayers()) do
         if tostring(plr.Team) == "Killer" and plr.Character then
@@ -899,3 +892,4 @@ Misc:CreateButton({
         game:GetService("TeleportService"):Teleport(game.PlaceId, LocalPlayer)
     end
 })
+
