@@ -367,6 +367,11 @@ RunService.Heartbeat:Connect(function()
     if not lpChar or not lpChar:FindFirstChild("HumanoidRootPart") then return end
     local lpRoot = lpChar.HumanoidRootPart
 
+    -- default colours if not set
+    local killerColor = _G.killerColor or Color3.fromRGB(255,0,0)
+    local survivorColor = _G.survivorColor or Color3.fromRGB(0,0,255)
+    local generatorColor = _G.generatorColor or Color3.fromRGB(255,255,51)
+
     -- KILLER
     local killer = getKillerModel()
     if killer and killer:FindFirstChild("HumanoidRootPart") then
@@ -375,32 +380,37 @@ RunService.Heartbeat:Connect(function()
             local hl = Instance.new("Highlight")
             hl.Name = "NXP_Highlight"
             hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-            hl.FillColor = Color3.fromRGB(255,0,0)
+            hl.FillColor = killerColor
             hl.Parent = killer
         elseif not _G.killers and killer:FindFirstChild("NXP_Highlight") then
             killer.NXP_Highlight:Destroy()
+        elseif killer:FindFirstChild("NXP_Highlight") then
+            killer.NXP_Highlight.FillColor = killerColor
         end
 
-        -- distance tag
+        -- distance tag above head
         if _G.killerDist and killer:FindFirstChild("Head") then
             local bb = killer.Head:FindFirstChild("KillerDistTag")
             if not bb then
                 bb = Instance.new("BillboardGui")
                 bb.Name = "KillerDistTag"
-                bb.Size = UDim2.new(0,80,0,20)
+                bb.Size = UDim2.new(0,100,0,20)
+                bb.StudsOffset = Vector3.new(0,1.5,0)
                 bb.AlwaysOnTop = true
                 bb.Parent = killer.Head
+
                 local txt = Instance.new("TextLabel")
                 txt.Name = "DistText"
                 txt.Size = UDim2.new(1,0,1,0)
                 txt.BackgroundTransparency = 1
-                txt.TextColor3 = Color3.fromRGB(255,0,0)
                 txt.TextStrokeTransparency = 0
                 txt.TextSize = 14
+                txt.Font = Enum.Font.SourceSansBold
                 txt.Parent = bb
             end
             local txt = bb:FindFirstChild("DistText")
             local dist = (killer.HumanoidRootPart.Position - lpRoot.Position).Magnitude
+            txt.TextColor3 = killerColor
             txt.Text = string.format("Killer [%.0f studs]", dist)
             bb.Enabled = dist <= killerMaxDist
         elseif killer:FindFirstChild("Head") and killer.Head:FindFirstChild("KillerDistTag") then
@@ -417,31 +427,37 @@ RunService.Heartbeat:Connect(function()
                 local hl = Instance.new("Highlight")
                 hl.Name = "NXP_Highlight"
                 hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-                hl.FillColor = Color3.fromRGB(0,0,255)
+                hl.FillColor = survivorColor
                 hl.Parent = char
             elseif not _G.survivors and char:FindFirstChild("NXP_Highlight") then
                 char.NXP_Highlight:Destroy()
+            elseif char:FindFirstChild("NXP_Highlight") then
+                char.NXP_Highlight.FillColor = survivorColor
             end
-            -- distance tag
+
+            -- distance tag above head
             if _G.survivorDist and char:FindFirstChild("Head") then
                 local bb = char.Head:FindFirstChild("SurvDistTag")
                 if not bb then
                     bb = Instance.new("BillboardGui")
                     bb.Name = "SurvDistTag"
-                    bb.Size = UDim2.new(0,80,0,20)
+                    bb.Size = UDim2.new(0,100,0,20)
+                    bb.StudsOffset = Vector3.new(0,1.5,0)
                     bb.AlwaysOnTop = true
                     bb.Parent = char.Head
+
                     local txt = Instance.new("TextLabel")
                     txt.Name = "DistText"
                     txt.Size = UDim2.new(1,0,1,0)
                     txt.BackgroundTransparency = 1
-                    txt.TextColor3 = Color3.fromRGB(0,0,255)
                     txt.TextStrokeTransparency = 0
                     txt.TextSize = 14
+                    txt.Font = Enum.Font.SourceSansBold
                     txt.Parent = bb
                 end
                 local txt = bb:FindFirstChild("DistText")
                 local dist = (char.HumanoidRootPart.Position - lpRoot.Position).Magnitude
+                txt.TextColor3 = survivorColor
                 txt.Text = string.format("Survivor [%.0f studs]", dist)
                 bb.Enabled = dist <= survivorMaxDist
             elseif char:FindFirstChild("Head") and char.Head:FindFirstChild("SurvDistTag") then
@@ -457,31 +473,37 @@ RunService.Heartbeat:Connect(function()
             local hl = Instance.new("Highlight")
             hl.Name = "NXP_Highlight"
             hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-            hl.FillColor = Color3.fromRGB(255,255,51)
+            hl.FillColor = generatorColor
             hl.Parent = gen
         elseif not _G.generators and gen:FindFirstChild("NXP_Highlight") then
             gen.NXP_Highlight:Destroy()
+        elseif gen:FindFirstChild("NXP_Highlight") then
+            gen.NXP_Highlight.FillColor = generatorColor
         end
-        -- distance tag
+
+        -- distance tag above generator HitBox
         if _G.genDist then
             local bb = gen.HitBox:FindFirstChild("GenDistTag")
             if not bb then
                 bb = Instance.new("BillboardGui")
                 bb.Name = "GenDistTag"
-                bb.Size = UDim2.new(0,80,0,20)
+                bb.Size = UDim2.new(0,100,0,20)
+                bb.StudsOffset = Vector3.new(0,2,0)
                 bb.AlwaysOnTop = true
                 bb.Parent = gen.HitBox
+
                 local txt = Instance.new("TextLabel")
                 txt.Name = "DistText"
                 txt.Size = UDim2.new(1,0,1,0)
                 txt.BackgroundTransparency = 1
-                txt.TextColor3 = Color3.fromRGB(255,255,51)
                 txt.TextStrokeTransparency = 0
                 txt.TextSize = 14
+                txt.Font = Enum.Font.SourceSansBold
                 txt.Parent = bb
             end
             local txt = bb:FindFirstChild("DistText")
             local dist = (gen.HitBox.Position - lpRoot.Position).Magnitude
+            txt.TextColor3 = generatorColor
             txt.Text = string.format("Generator [%.0f studs]", dist)
             bb.Enabled = dist <= genMaxDist
         elseif gen.HitBox:FindFirstChild("GenDistTag") then
@@ -892,4 +914,5 @@ Misc:CreateButton({
         game:GetService("TeleportService"):Teleport(game.PlaceId, LocalPlayer)
     end
 })
+
 
