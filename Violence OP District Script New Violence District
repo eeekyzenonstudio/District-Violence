@@ -20,6 +20,7 @@ local Window = Luna:CreateWindow({
         Title = "Violence District",
         Subtitle = "Key System",
         SaveKey = true,
+        Note = "KeySystem is Easy!",
         Key = {"VDSCRIPT17O3N6"},
         SecondAction = {
             Enabled = true,
@@ -883,3 +884,4 @@ Misc:CreateButton({
     end
 
 })
+
