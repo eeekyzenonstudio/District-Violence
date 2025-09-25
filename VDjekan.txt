@@ -1,0 +1,784 @@
+local Luna = loadstring(game:HttpGet("https://raw.githubusercontent.com/Nebula-Softworks/Luna-Interface-Suite/refs/heads/master/source.lua"))()
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInput = game:GetService("UserInputService")
+local LocalPlayer = Players.LocalPlayer
+
+local Window = Luna:CreateWindow({
+    Name = "Violence District",
+    Subtitle = "v1.1 [BETA]",
+    LogoID = "82795327169782",
+    LoadingEnabled = true,
+    LoadingTitle = "Violence District",
+    LoadingSubtitle = "Loading",
+    ConfigSettings = {
+        ConfigFolder = "District Folder"
+    },
+    KeySystem = true,
+    KeySettings = {
+        Title = "Violence District",
+        Subtitle = "Key System",
+        SaveKey = false,
+        Note = "Keysystem is Easy!",
+        Key = {"VDSCRIPT17O3N6"},
+        SecondAction = {
+            Enabled = true,
+            Type = "Link",
+            Parameter = "https://direct-link.net/1337281/TUa4hgYBUxWQ"
+        }
+    }
+})
+
+Window:CreateHomeTab({
+    SupportedExecutors = {
+        "Krnl",
+        "Fluxus",
+        "JJSploit",
+        "WEAREDEVS",
+        "Wave",
+        "CODex",
+        "Delta",
+        "ArceusX"
+    },
+    DiscordInvite = "No Available Link", -- just the invite ID
+    Icon = 1
+})
+
+local Visuals = Window:CreateTab({
+    Name = "Visuals",
+    Icon = "visibility",
+    ImageSource = "Material",
+    ShowTitle = true
+})
+
+local PlayerTab = Window:CreateTab({
+    Name = "Player",
+    Icon = "person",
+    ImageSource = "Material",
+    ShowTitle = true
+})
+
+local Misc = Window:CreateTab({
+    Name = "Misc",
+    Icon = "settings",
+    ImageSource = "Material",
+    ShowTitle = true
+})
+
+local function getKillerModel()
+    for _, plr in pairs(Players:GetPlayers()) do
+        if tostring(plr.Team) == "Killer" and plr.Character then
+            return plr.Character
+        end
+    end
+end
+
+local function getGenerators()
+    local gens = {}
+    if workspace:FindFirstChild("Map") then
+        for _, v in pairs(workspace.Map:GetChildren()) do
+            if v.Name == "Generator" and v:FindFirstChild("HitBox") then
+                table.insert(gens, v)
+            end
+        end
+    end
+    return gens
+end
+
+local killerMaxDist, survivorMaxDist, genMaxDist = 1000, 500, 200
+
+Visuals:CreateSection("Killer Highlights")
+Visuals:CreateToggle({
+    Name = "Killer ESP",
+    CurrentValue = false,
+    Callback = function(state) _G.killers = state end
+})
+
+Visuals:CreateSection("Player Highlights")
+Visuals:CreateToggle({
+    Name = "Survivors ESP",
+    CurrentValue = false,
+    Callback = function(state) _G.survivors = state end
+})
+
+
+Visuals:CreateSection("Generator Highlights")
+Visuals:CreateToggle({
+    Name = "Generators ESP",
+    CurrentValue = false,
+    Callback = function(state) _G.generators = state end
+})
+
+_G.distanceAlert = false
+_G.survivorAlert = false
+_G.genAlert = false
+
+_G.alertKillerDist = 100
+_G.alertSurvivorDist = 50
+_G.alertGenDist = 20
+
+_G.killerNotify = false
+_G.survivorNotify = false
+_G.genNotify = false
+
+local killerNotified = false
+local survivorNotified = {}
+local genNotified = {}
+
+local function getKillerModel()
+    for _, plr in pairs(Players:GetPlayers()) do
+        if tostring(plr.Team) == "Killer" and plr.Character then
+            return plr.Character
+        end
+    end
+end
+
+local function getGenerators()
+    local gens = {}
+    if workspace:FindFirstChild("Map") then
+        for _,v in pairs(workspace.Map:GetChildren()) do
+            if v.Name == "Generator" and v:FindFirstChild("HitBox") then
+                table.insert(gens,v)
+            end
+        end
+    end
+    return gens
+end
+
+Visuals:CreateSection("Distance Alerts When Nearby")
+Visuals:CreateToggle({
+    Name = "Killer",
+    CurrentValue = _G.distanceAlert,
+    Callback = function(state) _G.distanceAlert = state end
+})
+Visuals:CreateSlider({
+    Name = "Killer Distance Alert",
+    Range = {1,200},
+    Increment = 1,
+    CurrentValue = _G.alertKillerDist,
+    Callback = function(val) _G.alertKillerDist = val end
+})
+
+Visuals:CreateToggle({
+    Name = "Survivor",
+    CurrentValue = _G.survivorAlert,
+    Callback = function(state) _G.survivorAlert = state end
+})
+Visuals:CreateSlider({
+    Name = "Survivor Distance Alert",
+    Range = {1,200},
+    Increment = 1,
+    CurrentValue = _G.alertSurvivorDist,
+    Callback = function(val) _G.alertSurvivorDist = val end
+})
+
+Visuals:CreateToggle({
+    Name = "Generator",
+    CurrentValue = _G.genAlert,
+    Callback = function(state) _G.genAlert = state end
+})
+Visuals:CreateSlider({
+    Name = "Generator Distance Alert",
+    Range = {1,200},
+    Increment = 1,
+    CurrentValue = _G.alertGenDist,
+    Callback = function(val) _G.alertGenDist = val end
+})
+
+Visuals:CreateSection("Sound Alerts [English]")
+
+Visuals:CreateToggle({
+    Name = "Killer",
+    CurrentValue = _G.killerNotify,
+    Callback = function(state) _G.killerNotify = state end
+})
+
+Visuals:CreateToggle({
+    Name = "Survivor",
+    CurrentValue = _G.survivorNotify,
+    Callback = function(state) _G.survivorNotify = state end
+})
+
+Visuals:CreateToggle({
+    Name = "Generator",
+    CurrentValue = _G.genNotify,
+    Callback = function(state) _G.genNotify = state end
+})
+
+local killerMaxDist, survivorMaxDist, genMaxDist = 1000, 500, 200
+_G.alertKillerDist, _G.alertSurvivorDist, _G.alertGenDist = 100, 50, 20
+
+_G.distanceAlert, _G.survivorAlert, _G.genAlert = false, false, false
+_G.killerNotify, _G.survivorNotify, _G.genNotify = false, false, false
+
+-- Track notifications separately
+local killerDistNotified, killerSoundNotified = false, false
+local survivorNotified, genNotified = {}, {}
+
+--// Heartbeat Loop
+RunService.Heartbeat:Connect(function()
+    if not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then return end
+    local lpRoot = LocalPlayer.Character.HumanoidRootPart
+
+    -- Killer Alerts
+    local killer = getKillerModel()
+    if killer and killer:FindFirstChild("HumanoidRootPart") then
+        local dist = (killer.HumanoidRootPart.Position - lpRoot.Position).Magnitude
+
+        -- Distance Alert
+        if _G.distanceAlert then
+            if dist <= _G.alertKillerDist and not killerDistNotified then
+                game.StarterGui:SetCore("SendNotification", {
+                    Title = "Killer Nearby",
+                    Text = "Killer within "..math.floor(dist).." studs!",
+                    Duration = 2
+                })
+                killerDistNotified = true
+            elseif dist > _G.alertKillerDist then
+                killerDistNotified = false
+            end
+        end
+
+        -- Sound Alert
+        if _G.killerNotify then
+            if dist <= _G.alertKillerDist and not killerSoundNotified then
+                local soundId = math.random(1,2) == 1 and "88218529515883" or "101631745188408"
+                local sound = Instance.new("Sound")
+                sound.SoundId = "rbxassetid://"..soundId
+                sound.Parent = LocalPlayer:WaitForChild("PlayerGui")
+                sound:Play()
+                game:GetService("Debris"):AddItem(sound, 3)
+                killerSoundNotified = true
+            elseif dist > _G.alertKillerDist then
+                killerSoundNotified = false
+            end
+        end
+    end
+
+    -- Survivors
+    for _, plr in pairs(Players:GetPlayers()) do
+        if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") and tostring(plr.Team) ~= "Killer" then
+            local dist = (plr.Character.HumanoidRootPart.Position - lpRoot.Position).Magnitude
+
+            if _G.survivorAlert then
+                if dist <= _G.alertSurvivorDist and not survivorNotified[plr] then
+                    game.StarterGui:SetCore("SendNotification", {
+                        Title = "Survivor Nearby",
+                        Text = plr.Name.." within "..math.floor(dist).." studs!",
+                        Duration = 2
+                    })
+                    survivorNotified[plr] = true
+                elseif dist > _G.alertSurvivorDist then
+                    survivorNotified[plr] = false
+                end
+            end
+
+            if _G.survivorNotify then
+                if dist <= _G.alertSurvivorDist and not survivorNotified[plr] then
+                    local sound = Instance.new("Sound")
+                    sound.SoundId = "rbxassetid://138775091273040"
+                    sound.Parent = LocalPlayer:WaitForChild("PlayerGui")
+                    sound:Play()
+                    game:GetService("Debris"):AddItem(sound, 3)
+                    survivorNotified[plr] = true
+                elseif dist > _G.alertSurvivorDist then
+                    survivorNotified[plr] = false
+                end
+            end
+        end
+    end
+
+    -- Generators
+    for _, gen in pairs(getGenerators()) do
+        local dist = (gen.HitBox.Position - lpRoot.Position).Magnitude
+
+        if _G.genAlert then
+            if dist <= _G.alertGenDist and not genNotified[gen] then
+                game.StarterGui:SetCore("SendNotification", {
+                    Title = "Generator Nearby",
+                    Text = "Generator within "..math.floor(dist).." studs!",
+                    Duration = 2
+                })
+                genNotified[gen] = true
+            elseif dist > _G.alertGenDist then
+                genNotified[gen] = false
+            end
+        end
+
+        if _G.genNotify then
+            if dist <= _G.alertGenDist and not genNotified[gen] then
+                local sound = Instance.new("Sound")
+                sound.SoundId = "rbxassetid://83447854880719"
+                sound.Parent = LocalPlayer:WaitForChild("PlayerGui")
+                sound:Play()
+                game:GetService("Debris"):AddItem(sound, 3)
+                genNotified[gen] = true
+            elseif dist > _G.alertGenDist then
+                genNotified[gen] = false
+            end
+        end
+    end
+end)
+
+RunService.Heartbeat:Connect(function()
+    local lpChar = LocalPlayer.Character
+    if not lpChar or not lpChar:FindFirstChild("HumanoidRootPart") then return end
+
+    -- default colours
+    local killerColor = _G.killerColor or Color3.fromRGB(255,0,0)
+    local survivorColor = _G.survivorColor or Color3.fromRGB(0,0,255)
+    local generatorColor = _G.generatorColor or Color3.fromRGB(255,255,51)
+
+    -- KILLER highlight only
+    local killer = getKillerModel()
+    if killer and killer:FindFirstChild("HumanoidRootPart") then
+        if _G.killers and not killer:FindFirstChild("NXP_Highlight") then
+            local hl = Instance.new("Highlight")
+            hl.Name = "NXP_Highlight"
+            hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+            hl.FillColor = killerColor
+            hl.Parent = killer
+        elseif not _G.killers and killer:FindFirstChild("NXP_Highlight") then
+            killer.NXP_Highlight:Destroy()
+        elseif killer:FindFirstChild("NXP_Highlight") then
+            killer.NXP_Highlight.FillColor = killerColor
+        end
+    end
+
+    -- SURVIVOR highlights only
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if tostring(plr.Team) ~= "Killer" and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+            local char = plr.Character
+            if _G.survivors and not char:FindFirstChild("NXP_Highlight") then
+                local hl = Instance.new("Highlight")
+                hl.Name = "NXP_Highlight"
+                hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+                hl.FillColor = survivorColor
+                hl.Parent = char
+            elseif not _G.survivors and char:FindFirstChild("NXP_Highlight") then
+                char.NXP_Highlight:Destroy()
+            elseif char:FindFirstChild("NXP_Highlight") then
+                char.NXP_Highlight.FillColor = survivorColor
+            end
+        end
+    end
+
+    -- GENERATOR highlights only
+    for _, gen in ipairs(getGenerators()) do
+        if _G.generators and not gen:FindFirstChild("NXP_Highlight") then
+            local hl = Instance.new("Highlight")
+            hl.Name = "NXP_Highlight"
+            hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+            hl.FillColor = generatorColor
+            hl.Parent = gen
+        elseif not _G.generators and gen:FindFirstChild("NXP_Highlight") then
+            gen.NXP_Highlight:Destroy()
+        elseif gen:FindFirstChild("NXP_Highlight") then
+            gen.NXP_Highlight.FillColor = generatorColor
+        end
+    end
+end)
+
+local lastGen
+local genCooldown = false
+local MAX_TELEPORT_DIST = 380
+local NEAREST_PLAYER_DIST = 100
+local KILLER_RADIUS = 100
+local lastNotify = 0 -- for notification cooldown
+
+-- Safe teleport toggle
+PlayerTab:CreateToggle({
+    Name = "Safe Teleport",
+    CurrentValue = true,
+    Callback = function(state)
+        _G.safeTP = state
+    end
+})
+_G.safeTP = true
+
+-- helper to send notification with cooldown
+local function notify(title, text, duration)
+    local now = tick()
+    if now - lastNotify >= 3 then
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = title,
+            Text = text,
+            Duration = duration or 3
+        })
+        lastNotify = now
+    end
+end
+
+--// Teleport to Random Generator
+PlayerTab:CreateButton({
+    Name = "Teleport to Random Generator",
+    Callback = function()
+        if genCooldown then return end
+        local gens = getGenerators()
+        if #gens > 0 then
+            local lpChar = LocalPlayer.Character
+            if not lpChar or not lpChar:FindFirstChild("HumanoidRootPart") then return end
+            local lpRoot = lpChar.HumanoidRootPart
+
+            local rand
+            repeat
+                rand = gens[math.random(1,#gens)]
+            until rand ~= lastGen or #gens == 1
+
+            if _G.safeTP then
+                local dist = (rand.HitBox.Position - lpRoot.Position).Magnitude
+                if dist > MAX_TELEPORT_DIST then
+                    notify("Safe Teleport Failed", "Generator too far ("..math.floor(dist).." studs)", 2)
+                    return
+                end
+
+                local killer = getKillerModel()
+                if killer and killer:FindFirstChild("HumanoidRootPart") then
+                    local kdist = (killer.HumanoidRootPart.Position - rand.HitBox.Position).Magnitude
+                    if kdist <= KILLER_RADIUS then
+                        notify("Safe Teleport Blocked", "Killer "..math.floor(kdist).." studs near generator!", 2)
+                        return
+                    end
+                end
+
+                local success = safeTeleport(rand.HitBox.CFrame + Vector3.new(0,3,0))
+                if success then
+                    lastGen = rand
+                    genCooldown = true
+                    task.delay(4, function() genCooldown = false end)
+                else
+                    notify("Safe Teleport Failed", "Path blocked!", 2)
+                end
+            else
+                lpRoot.CFrame = rand.HitBox.CFrame + Vector3.new(0,3,0)
+                lastGen = rand
+            end
+        end
+    end
+})
+
+--// Teleport to Selected Survivor
+PlayerTab:CreateButton({
+    Name = "Teleport to Selected Survivor",
+    Callback = function()
+        local plr = Players:FindFirstChild(_G.selectedSurvivor)
+        local lpChar = LocalPlayer.Character
+        if not lpChar or not lpChar:FindFirstChild("HumanoidRootPart") then return end
+        local lpRoot = lpChar.HumanoidRootPart
+
+        if plr and tostring(plr.Team) ~= "Killer" and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+            local targetRoot = plr.Character.HumanoidRootPart
+            if _G.safeTP then
+                local dist = (targetRoot.Position - lpRoot.Position).Magnitude
+                if dist > MAX_TELEPORT_DIST then
+                    notify("Safe Teleport Failed", "Player too far ("..math.floor(dist).." studs)", 2)
+                    return
+                end
+                safeTeleport(targetRoot.CFrame + Vector3.new(0,3,0))
+            else
+                lpRoot.CFrame = targetRoot.CFrame + Vector3.new(0,3,0)
+            end
+        else
+            if _G.safeTP then
+                notify("Safe Teleport Failed", "Selected player unavailable", 2)
+            end
+        end
+    end
+})
+
+--// Teleport to Nearest Survivor
+PlayerTab:CreateButton({
+    Name = "Teleport to Nearest Survivor",
+    Callback = function()
+        local lpChar = LocalPlayer.Character
+        if not lpChar or not lpChar:FindFirstChild("HumanoidRootPart") then return end
+        local lpRoot = lpChar.HumanoidRootPart
+
+        local nearestPlr, nearestDist = nil, math.huge
+        for _, plr in pairs(Players:GetPlayers()) do
+            if tostring(plr.Team) ~= "Killer" and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+                local dist = (plr.Character.HumanoidRootPart.Position - lpRoot.Position).Magnitude
+                if dist < nearestDist then
+                    nearestDist = dist
+                    nearestPlr = plr
+                end
+            end
+        end
+
+        if nearestPlr then
+            if _G.safeTP then
+                if nearestDist <= NEAREST_PLAYER_DIST then
+                    safeTeleport(nearestPlr.Character.HumanoidRootPart.CFrame + Vector3.new(0,3,0))
+                else
+                    notify("Safe Teleport Failed", "No survivor within 100 studs", 2)
+                end
+            else
+                lpRoot.CFrame = nearestPlr.Character.HumanoidRootPart.CFrame + Vector3.new(0,3,0)
+            end
+        end
+    end
+})
+
+local oldNamecall
+oldNamecall = hookmetamethod(game, "__namecall", function(self, ...)
+    if not checkcaller() then
+        if _G.antiFail and tostring(self) == "SkillCheckResultEvent" then return end
+        if _G.antiHealFail and tostring(self) == "HealingSkillCheckResultEvent" then return end
+    end
+    return oldNamecall(self, ...)
+end)
+
+
+PlayerTab:CreateSection("Anti Fail")
+PlayerTab:CreateToggle({
+    Name = "Anti Generator Fail",
+    CurrentValue = false,
+    Callback = function(state)
+        _G.antiFail = state
+    end
+})
+
+PlayerTab:CreateToggle({
+    Name = "Anti Heal Fail",
+    CurrentValue = false,
+    Callback = function(state)
+        _G.antiHealFail = state
+    end
+})
+
+local SpeedValue = 13.4
+local sliderObj, inputObj
+
+sliderObj = PlayerTab:CreateSlider({
+    Name = "Speed Value",
+    Range = {1, 20},
+    Increment = 0.1,
+    CurrentValue = SpeedValue,
+    Callback = function(val)
+        SpeedValue = math.clamp(val, 1, 20)
+        if inputObj and inputObj.Set then
+            pcall(function() inputObj:Set(tostring(SpeedValue)) end)
+        end
+        if _G.speed then
+            local hum = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid")
+            if hum then hum.WalkSpeed = SpeedValue end
+        end
+    end
+})
+
+inputObj = PlayerTab:CreateInput({
+    Name = "Set Speed",
+    PlaceholderText = "Enter speed (1-20) and press Enter",
+    Numeric = true,
+    CurrentValue = tostring(SpeedValue),
+    Enter = true,
+    Callback = function(txt)
+        local num = tonumber(txt)
+        if num then
+            num = math.clamp(num, 1, 20)
+            SpeedValue = num
+            if sliderObj and sliderObj.Set then
+                pcall(function() sliderObj:Set(SpeedValue) end)
+            end
+            if _G.speed then
+                local hum = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid")
+                if hum then hum.WalkSpeed = SpeedValue end
+            end
+        end
+    end
+})
+
+PlayerTab:CreateToggle({
+    Name = "Speed Toggle",
+    CurrentValue = false,
+    Callback = function(state)
+        _G.speed = state
+        local humanoid = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid")
+        if humanoid then
+            if state then
+                humanoid.WalkSpeed = SpeedValue
+            else
+                humanoid.WalkSpeed = 16
+            end
+        end
+    end
+})
+
+Misc:CreateSection("Set Highlights Color")
+local killerColor = _G.killerColor or Color3.fromRGB(255,0,0)
+local killerPicker = Misc:CreateColorPicker({
+    Name = "Killer Color",
+    Default = killerColor,
+    Callback = function(c)
+        killerColor = c
+    end
+})
+Misc:CreateButton({
+    Name = "Set Killer Color",
+    Callback = function()
+        _G.killerColor = killerColor
+        for _, plr in pairs(Players:GetPlayers()) do
+            if tostring(plr.Team) == "Killer" and plr.Character then
+                local hl = plr.Character:FindFirstChild("NXP_Highlight")
+                if hl then
+                    hl.FillColor = _G.killerColor
+                end
+            end
+        end
+    end
+})
+
+local survivorColor = _G.survivorColor or Color3.fromRGB(0,0,255)
+local survivorPicker = Misc:CreateColorPicker({
+    Name = "Survivor Color",
+    Default = survivorColor,
+    Callback = function(c)
+        survivorColor = c
+    end
+})
+Misc:CreateButton({
+    Name = "Set Survivor Color",
+    Callback = function()
+        _G.survivorColor = survivorColor
+        for _, plr in pairs(Players:GetPlayers()) do
+            if tostring(plr.Team) ~= "Killer" and plr.Character then
+                local hl = plr.Character:FindFirstChild("NXP_Highlight")
+                if hl then
+                    hl.FillColor = _G.survivorColor
+                end
+            end
+        end
+    end
+})
+
+local generatorColor = _G.generatorColor or Color3.fromRGB(255,255,51)
+local generatorPicker = Misc:CreateColorPicker({
+    Name = "Generator Color",
+    Default = generatorColor,
+    Callback = function(c)
+        generatorColor = c
+    end
+})
+Misc:CreateButton({
+    Name = "Set Generator Color",
+    Callback = function()
+        _G.generatorColor = generatorColor
+        for _, gen in pairs(getGenerators()) do
+            local hl = gen:FindFirstChild("NXP_Highlight")
+            if hl then
+                hl.FillColor = _G.generatorColor
+            end
+        end
+    end
+})
+
+Misc:CreateButton({
+    Name = "Reset All Highlight Colors Back To Default",
+    Callback = function()
+        _G.killerColor = Color3.fromRGB(255,0,0)
+        _G.survivorColor = Color3.fromRGB(0,0,255)
+        _G.generatorColor = Color3.fromRGB(255,255,51)
+
+        for _, plr in pairs(Players:GetPlayers()) do
+            if plr.Character then
+                local hl = plr.Character:FindFirstChild("NXP_Highlight")
+                if hl then
+                    hl.FillColor = tostring(plr.Team) == "Killer" and _G.killerColor or _G.survivorColor
+                end
+            end
+        end
+        for _, gen in pairs(getGenerators()) do
+            local hl = gen:FindFirstChild("NXP_Highlight")
+            if hl then hl.FillColor = _G.generatorColor end
+        end
+    end
+})
+
+Misc:CreateSection("")
+_G.noclipKey = Enum.KeyCode.G
+_G.noclip = false
+
+local noclipToggle = Misc:CreateToggle({
+    Name = "Noclip",
+    CurrentValue = _G.noclip,
+    Callback = function(state)
+        _G.noclip = state
+    end
+})
+
+Misc:CreateSection("Keybinds")
+local noclipInput = Misc:CreateInput({
+    Name = "Noclip Key",
+    PlaceholderText = "Press a key and Enter",
+    Numeric = false,
+    Enter = true,
+    CurrentValue = _G.noclipKey.Name, -- shows G initially
+    Callback = function(txt)
+        local key = Enum.KeyCode[txt]
+        if key then
+            _G.noclipKey = key
+            noclipInput:Set(_G.noclipKey.Name) -- updates input box to show current key
+        end
+    end
+})
+
+game:GetService("UserInputService").InputBegan:Connect(function(input, gpe)
+    if gpe then return end
+    if input.KeyCode == _G.noclipKey then
+        _G.noclip = not _G.noclip
+        noclipToggle:Set(_G.noclip)
+    end
+end)
+
+task.spawn(function()
+    while task.wait() do
+        if _G.noclip and LocalPlayer.Character then
+            for _,v in pairs(LocalPlayer.Character:GetChildren()) do
+                if v:IsA("BasePart") then
+                    v.CanCollide = false
+                end
+            end
+        end
+    end
+end)
+
+Misc:CreateSection("")
+_G.allowJump = false
+local originalJumpPower = 50
+Misc:CreateToggle({
+    Name = "Allow Jump",
+    CurrentValue = _G.allowJump,
+    Callback = function(state)
+        _G.allowJump = state
+        local humanoid = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid")
+        if humanoid then
+            if _G.allowJump then
+                humanoid.JumpPower = 50
+            else
+                humanoid.JumpPower = 0
+            end
+        end
+    end
+})
+
+Misc:CreateButton({ Name = "No Fog", Callback = function()
+    for _,v in pairs(game.Lighting:GetDescendants()) do if v:IsA("Atmosphere") then v:Destroy() end end
+    game.Lighting.FogEnd = 999999
+end})
+
+Misc:CreateSection("Reset")
+Misc:CreateButton({
+    Name = "Self Sacrifice",
+    Callback = function()
+        if LocalPlayer.Character then LocalPlayer.Character:BreakJoints() end
+    end
+})
+
+Misc:CreateSection("")
+Misc:CreateButton({
+    Name = "Rejoin",
+    Callback = function()
+        game:GetService("TeleportService"):Teleport(game.PlaceId, LocalPlayer)
+    end
+})
